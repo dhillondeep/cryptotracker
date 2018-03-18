@@ -27,5 +27,5 @@ run:
 
 deps:
 	@echo Gathering dependencies:
-	$(GOGET) -u -v github.com/miguelmota/go-coinmarketcap
+	$(GOGET) -u -v github.com/miguelmota/go-coinmarketcap gopkg.in/urfave/cli.v2
 	@echo Dependencies up to date!
