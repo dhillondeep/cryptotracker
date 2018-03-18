@@ -2,17 +2,17 @@ package main
 
 import cmc "github.com/miguelmota/go-coinmarketcap"
 
-// date for the coins
+// struct for storing date
 type Date struct {
-	Year  int
-	Month string
-	Day   int
-	Time  string
+    Year  int
+    Month string
+    Day   int
+    Time  string
 }
 
-// total packet
+// struct for storing the whole coin information packet
 type Information struct {
-	Date Date
-	Coin cmc.Coin
-	News []string
+    Date Date
+    Coin cmc.Coin
+    News []string
 }
