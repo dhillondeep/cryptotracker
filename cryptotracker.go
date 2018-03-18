@@ -6,21 +6,6 @@ import (
 	"strconv"
 )
 
-// date for the coins
-type Date struct {
-	Year  int
-	Month string
-	Day   int
-	Time  string
-}
-
-// total packet
-type Information struct {
-	Date Date
-	Coin cmc.Coin
-	News []string
-}
-
 func main() {
 	return
 }
@@ -55,3 +40,4 @@ func getCoin(name string) (cmc.Coin) {
 
 	return coinInfo
 }
+

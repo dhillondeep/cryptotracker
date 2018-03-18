@@ -9,17 +9,14 @@ repos:
   # - repo1
   # - repo2
 
-# max number of news sources (internal max is 15)
-maxNews: 5
+# max number of news articles (internal max is 5)
+maxNews: 2
 
 # this allows the program to commit multiple times instead of just once
 multipleCommits: True
 
 # allows you to override the files for the coin at current date if they exist
 override: False
-
-# defines if the program should run continuously or just once
-runType: continous
 
 # if the runType is continuous, define the times when the data will be gathered and pushed (24 HR clock)
 # it will choose the first successful time, others are fallback
