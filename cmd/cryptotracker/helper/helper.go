@@ -3,15 +3,15 @@ package helper
 import (
     "time"
     "strconv"
-
-    . "../types"
-    cmc "github.com/miguelmota/go-coinmarketcap"
-    "io/ioutil"
-    "gopkg.in/yaml.v2"
     "fmt"
     "path/filepath"
     "os"
     "runtime"
+    "io/ioutil"
+
+    . "../types"
+    cmc "github.com/miguelmota/go-coinmarketcap"
+    "gopkg.in/yaml.v2"
 )
 
 // Creates a coin information packet that contains the date, coin and news
@@ -28,9 +28,9 @@ func getDate() (Date) {
     currTime := time.Now()
 
     return Date{
-        Year: currTime.Year(),
+        Year:  currTime.Year(),
         Month: currTime.Month().String(),
-        Day: currTime.Day(),
+        Day:   currTime.Day(),
         Time: strconv.Itoa(currTime.Hour()) + ":" + strconv.Itoa(currTime.Minute()) + ":" +
             strconv.Itoa(currTime.Second()),
     }
@@ -66,7 +66,7 @@ func Parse(fileName string) (interface{}) {
     return c
 }
 
-func Validate(config interface{}) (string, bool){
+func Validate(config interface{}) (string, bool) {
     c := config.(Configuration)
 
     if len(c.Coins) == 0 {
@@ -89,11 +89,16 @@ func Validate(config interface{}) (string, bool){
     return "Successfully validated configuration file.", true
 }
 
-func CommonParsingAndValidation() {
+func GetCryptotrackerPath() (string, error) {
+    _, configFileName, _, _ := runtime.Caller(0)
+    return filepath.Abs(configFileName + "/../../../../")
+}
+
+func CommonParsingAndValidation() (interface{}) {
     fmt.Print("Parsing Configuration file ... ")
 
-    _, configFileName, _, _ := runtime.Caller(0)
-    fullPath, _ := filepath.Abs(configFileName + "/../../../../../assets/config/config.yml")
+    cryptoPath, _ := GetCryptotrackerPath()
+    fullPath, _ := filepath.Abs(cryptoPath + "/assets/config/config.yml")
 
     fmt.Println("done")
 
@@ -102,7 +107,9 @@ func CommonParsingAndValidation() {
     message, valid := Validate(configuration)
     fmt.Println(message)
 
-    if !valid{
+    if !valid {
         os.Exit(1)
     }
+
+    return configuration
 }

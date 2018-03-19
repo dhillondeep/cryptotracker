@@ -6,6 +6,7 @@ coins:
 
 # repos to push data to (multiple repos are allowed)
 repos:
+  - "https://github.com/dhillondeep/private-repo-2"
   # - repo1
   # - repo2
 

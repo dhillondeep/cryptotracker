@@ -1,7 +1,7 @@
 package monitor
 
 import (
-    . "../helper"
+    . "../../helper"
 )
 
 func Execute(commits int, override bool) {

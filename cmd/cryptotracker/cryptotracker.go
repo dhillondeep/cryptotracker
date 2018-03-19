@@ -33,7 +33,7 @@ func main() {
             UsageText: "gather - Runs the app one time, gathers data, and pushes it to repo(s)",
             Flags: []cli.Flag{
                 cli.IntFlag{Name: "commits",
-                    Usage: "Number of commits to make when data is pushed to repo(s) (15 is max)",
+                    Usage: "Number of commits to make when data is pushed to repo(s) (max = min(num coins, 15))",
                     Value: 1},
                 cli.BoolFlag{Name: "override",
                     Usage: "Flag to override the data already in the repo (only if data is in supported form)"},
@@ -50,7 +50,7 @@ func main() {
             UsageText: "monitor - Runs the app like a server, continuously gathers data, and pushes it to repo(s)",
             Flags: []cli.Flag{
                 cli.IntFlag{Name: "commits",
-                    Usage: "Number of commits to make when data is pushed to repo(s) (5 is max)",
+                    Usage: "Number of commits to make when data is pushed to repo(s) (max = min(num coins, 15))",
                     Value: 1},
                 cli.BoolFlag{Name: "override",
                     Usage: "Flag to override the data already in the repo (only if data is in supported form)"},
