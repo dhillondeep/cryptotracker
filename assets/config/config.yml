@@ -1,0 +1,15 @@
+# coins to track
+coins:
+  - "etherium"
+  - "bitcoin"
+  - "ripple"
+
+# repos to push data to (multiple repos are allowed)
+repos:
+  # - repo1
+  # - repo2
+
+
+# interval is the frequency of data being gathered and stored.
+# Available intervals are: "hourly", and "daily"
+interval: "hourly"

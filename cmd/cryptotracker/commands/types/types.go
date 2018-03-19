@@ -1,4 +1,4 @@
-package main
+package types
 
 import cmc "github.com/miguelmota/go-coinmarketcap"
 
@@ -14,5 +14,12 @@ type Date struct {
 type Information struct {
     Date Date
     Coin cmc.Coin
-    News []string
+}
+
+
+// struct for the config file
+type Configuration struct {
+    Coins []string
+    Repos []string
+    Interval string
 }

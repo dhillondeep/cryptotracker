@@ -4,9 +4,10 @@ import (
     "time"
     "os"
     "log"
-    "fmt"
 
     "github.com/urfave/cli"
+    "./commands/gather"
+    "./commands/monitor"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
     }
     app.Copyright = "Copyright (c) [2018] [Deep Dhillon]"
     app.Usage = "Track and gather cryptocurrency data"
-    app.UsageText = "Crypto Tracker - Track and gather cryptocurrency data"
+    app.UsageText = "cryptotracker [global options] command"
 
     app.Commands = []cli.Command{
         {
@@ -32,25 +33,14 @@ func main() {
             UsageText: "gather - Runs the app one time, gathers data, and pushes it to repo(s)",
             Flags: []cli.Flag{
                 cli.IntFlag{Name: "commits",
-                    Usage: "Number of commits to make when data is pushed to repo(s) (5 is max)",
-                    Value: 1},
-                cli.IntFlag{Name: "news",
-                    Usage: "Number of news articles to store (10 is max)",
+                    Usage: "Number of commits to make when data is pushed to repo(s) (15 is max)",
                     Value: 1},
                 cli.BoolFlag{Name: "override",
                     Usage: "Flag to override the data already in the repo (only if data is in supported form)"},
             },
-            Before: func(c *cli.Context) error {
-                fmt.Fprintf(c.App.Writer, "Cryptotracker working and gathering data for you!!\n")
-                return nil
-            },
-            After: func(c *cli.Context) error {
-                fmt.Fprintf(c.App.Writer, "Cryptotracker (gather) successfully finished\n")
-                return nil
-            },
             Action: func(c *cli.Context) error {
                 // Code to run gather sub command goes here
-                execute(false, c.Int("commits"), c.Int("news"), c.Bool("override"))
+                gather.Execute(c.Int("commits"), c.Bool("override"))
                 return nil
             },
         },
@@ -62,21 +52,12 @@ func main() {
                 cli.IntFlag{Name: "commits",
                     Usage: "Number of commits to make when data is pushed to repo(s) (5 is max)",
                     Value: 1},
-                cli.IntFlag{Name: "news",
-                    Usage: "Number of news articles to store (10 is max)",
-                    Value: 1},
-            },
-            Before: func(c *cli.Context) error {
-                fmt.Fprintf(c.App.Writer, "Cryptotracker continuously working and gathering data for you!!\n")
-                return nil
-            },
-            After: func(c *cli.Context) error {
-                fmt.Fprintf(c.App.Writer, "Cryptotracker (monitor) successfully finished\n")
-                return nil
+                cli.BoolFlag{Name: "override",
+                    Usage: "Flag to override the data already in the repo (only if data is in supported form)"},
             },
             Action: func(c *cli.Context) error {
                 // Code to run monitor sub command goes here
-                execute(true, c.Int("commits"), c.Int("news"), false)
+                monitor.Execute(c.Int("commits"), c.Bool("override"))
                 return nil
             },
         },

@@ -11,21 +11,25 @@ all: build run
 
 build:
 	@echo Building $(BINARY_NAME) project:
-	$(GOBUILD) -o $(BINARY_NAME) -v
+	@cd "$(CURDIR)/cmd/$(BINARY_NAME)" && $(GOBUILD) -o $(BINARY_NAME) -v
+	@if ! [ -d "bin" ]; then \
+		mkdir bin; \
+	fi
+	@mv $(CURDIR)/cmd/${BINARY_NAME}/${BINARY_NAME} bin/
 	@echo Project built!!
 
 clean:
 	@echo Cleaning $(BINARY_NAME) project files:
 	$(GOCLEAN)
-	rm -f $(BINARY_NAME)
-	rm -f $(BINARY_UNIX)
+	rm -f bin/$(BINARY_NAME)
+	rm -f bin/$(BINARY_UNIX)
 	@echo Cleaning Finished!!
 
 run:
-	@$(GOBUILD) -o $(BINARY_NAME) ./...
-	@./$(BINARY_NAME)
+	@./bin/$(BINARY_NAME) ${ARGS}
 
 deps:
 	@echo Gathering dependencies:
-	$(GOGET) -u -v github.com/miguelmota/go-coinmarketcap gopkg.in/urfave/cli.v2
+	$(GOGET) -u -v github.com/miguelmota/go-coinmarketcap
+	$(GOGET) -u -v gopkg.in/urfave/cli.v2
 	@echo Dependencies up to date!
