@@ -118,9 +118,12 @@ func CommonParsingAndValidation() (interface{}) {
 func CommitData(path string, currCommits int) (int) {
     commitTime := strconv.Itoa(time.Now().Hour()) + ":" + strconv.Itoa(time.Now().Minute()) + ":" +
         strconv.Itoa(time.Now().Second())
+    commitDate := time.Now().Month().String() + " " + strconv.Itoa(time.Now().Day()) + ", " +
+        strconv.Itoa(time.Now().Year())
 
     currCommits++
-    exec.Command("git", "-C", path, "commit", "-m", "pushed crypto data @ time -> " + commitTime).Output()
+    exec.Command("git", "-C", path, "commit", "-m", "pushed crypto data on " + commitDate + " @ time " +
+        commitTime).Output()
 
     return currCommits
 }
