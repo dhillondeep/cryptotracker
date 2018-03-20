@@ -1,15 +1,8 @@
 # coins to track
 coins:
-  - "etherium"
-  - "bitcoin"
-  - "ripple"
 
 # repos to push data to (multiple repos are allowed)
 repos:
-  - "https://github.com/dhillondeep/private-repo-2"
-  # - repo1
-  # - repo2
-
 
 # interval is the frequency of data being gathered and stored.
 # Available intervals are: "hourly", and "daily"

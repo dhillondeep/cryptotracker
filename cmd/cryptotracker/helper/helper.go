@@ -12,10 +12,11 @@ import (
     . "../types"
     cmc "github.com/miguelmota/go-coinmarketcap"
     "gopkg.in/yaml.v2"
+    "os/exec"
 )
 
 // Creates a coin information packet that contains the date, coin and news
-func getCoinInformation(coinName string) (Information) {
+func GetCoinInformation(coinName string) (Information) {
     return Information{
         Date: getDate(),
         Coin: getCoin(coinName),
@@ -112,4 +113,14 @@ func CommonParsingAndValidation() (interface{}) {
     }
 
     return configuration
+}
+
+func CommitData(path string, currCommits int) (int) {
+    commitTime := strconv.Itoa(time.Now().Hour()) + ":" + strconv.Itoa(time.Now().Minute()) + ":" +
+        strconv.Itoa(time.Now().Second())
+
+    currCommits++
+    exec.Command("git", "-C", path, "commit", "-m", "pushed crypto data @ time -> " + commitTime).Output()
+
+    return currCommits
 }
