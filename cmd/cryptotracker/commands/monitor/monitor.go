@@ -19,6 +19,9 @@ func Execute(commits int, override bool) {
         interval = 24 * time.Hour
     }
 
+    // make the first commit now
+    ExecuteGatherAndPush(commits, override, configuration)
+
     ticker := time.NewTicker(interval)
     quit := make(chan struct{})
     go func() {
