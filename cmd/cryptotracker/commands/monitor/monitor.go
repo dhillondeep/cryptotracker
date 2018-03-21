@@ -12,7 +12,7 @@ import (
 func Execute(commits int, override bool) {
     configuration := CommonParsingAndValidation().(Configuration)
 
-    interval := 1 * time.Minute
+    interval := 1 * time.Hour
     duration := 1752000 * time.Hour // run the app for 200 years (means never stop lol)
 
     if configuration.Interval == "daily" {
