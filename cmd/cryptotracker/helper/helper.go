@@ -16,7 +16,7 @@ import (
     "strings"
     "log"
 
-    . "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/types"
+    . "cryptotracker/cmd/cryptotracker/types"
 )
 
 // Creates a coin information packet that contains the date, coin and news
@@ -77,16 +77,16 @@ func Validate(config interface{}) (string, bool) {
     c := config.(Configuration)
 
     if len(c.Coins) == 0 {
-        return "Error: Please add coins to track (assets/config.yml)", false
+        return "Error: Please add coins to track (assets/config/config.yml)", false
     }
 
     if len(c.Repos) == 0 {
-        return "Error: Please add a repo to push data to (assets/config.yml)", false
+        return "Error: Please add a repo to push data to (assets/config/config.yml)", false
     }
 
     if len(c.Interval) == 0 {
         c.Interval = "hourly"
-        return "Warning: Hourly interval selected since no interval was specified (assets/config.yml)", true
+        return "Warning: Hourly interval selected since no interval was specified (assets/config/config.yml)", true
 
     } else if c.Interval != "hourly" && c.Interval != "daily" {
         c.Interval = "hourly"

@@ -4,8 +4,8 @@ import (
     "time"
     "log"
 
-    . "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/helper"
-    . "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/types"
+    . "cryptotracker/cmd/cryptotracker/helper"
+    . "cryptotracker/cmd/cryptotracker/types"
 )
 
 // Execute the monitor command to run the program like a server and store crypto data to the repo(s)
