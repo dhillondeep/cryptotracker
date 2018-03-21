@@ -16,10 +16,9 @@ type Information struct {
     Coin cmc.Coin
 }
 
-
 // struct for the config file
 type Configuration struct {
-    Coins []string
-    Repos []string
+    Coins    []string
+    Repos    []string
     Interval string
 }

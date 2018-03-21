@@ -3,16 +3,18 @@ package helper
 import (
     "time"
     "strconv"
-    "fmt"
     "path/filepath"
     "os"
     "runtime"
     "io/ioutil"
 
-    . "../types"
     cmc "github.com/miguelmota/go-coinmarketcap"
     "gopkg.in/yaml.v2"
     "os/exec"
+    "math"
+    "encoding/json"
+    "strings"
+    "log"
 )
 
 // Creates a coin information packet that contains the date, coin and news
@@ -23,8 +25,7 @@ func GetCoinInformation(coinName string) (Information) {
     }
 }
 
-// Gets current date and converts it into struct which will be later on be
-// used in JSON
+// Gets current date and converts it into struct which will be later on be used in JSON
 func getDate() (Date) {
     currTime := time.Now()
 
@@ -45,6 +46,7 @@ func getCoin(name string) (cmc.Coin) {
     return coinInfo
 }
 
+// Convert File text to a String
 func FileToString(fileName string) (string, error) {
     buff, err := ioutil.ReadFile(fileName)
     str := string(buff)
@@ -59,6 +61,7 @@ func ToYmlStruct(data string, out interface{}) (error) {
     return e
 }
 
+// Parses a YML file and convert the data to a struct
 func Parse(fileName string) (interface{}) {
     c := Configuration{}
     data, _ := FileToString(fileName)
@@ -67,6 +70,7 @@ func Parse(fileName string) (interface{}) {
     return c
 }
 
+// Validates if the data in configuration file is valid
 func Validate(config interface{}) (string, bool) {
     c := config.(Configuration)
 
@@ -90,23 +94,23 @@ func Validate(config interface{}) (string, bool) {
     return "Successfully validated configuration file.", true
 }
 
+// Get's the path to the root directory of this project
 func GetCryptotrackerPath() (string, error) {
     _, configFileName, _, _ := runtime.Caller(0)
     return filepath.Abs(configFileName + "/../../../../")
 }
 
+// Parses configuration file and validates data
 func CommonParsingAndValidation() (interface{}) {
-    fmt.Print("Parsing Configuration file ... ")
+    log.Print("Parsing Configuration file")
 
     cryptoPath, _ := GetCryptotrackerPath()
     fullPath, _ := filepath.Abs(cryptoPath + "/assets/config/config.yml")
 
-    fmt.Println("done")
-
-    fmt.Println("Validating Configuration file data")
+    log.Println("Validating Configuration file data")
     configuration := Parse(fullPath)
     message, valid := Validate(configuration)
-    fmt.Println(message)
+    log.Println(message)
 
     if !valid {
         os.Exit(1)
@@ -115,6 +119,7 @@ func CommonParsingAndValidation() (interface{}) {
     return configuration
 }
 
+// Commits data to the git repo
 func CommitData(path string, currCommits int) (int) {
     commitTime := strconv.Itoa(time.Now().Hour()) + ":" + strconv.Itoa(time.Now().Minute()) + ":" +
         strconv.Itoa(time.Now().Second())
@@ -122,8 +127,91 @@ func CommitData(path string, currCommits int) (int) {
         strconv.Itoa(time.Now().Year())
 
     currCommits++
-    exec.Command("git", "-C", path, "commit", "-m", "pushed crypto data on " + commitDate + " @ time " +
+    exec.Command("git", "-C", path, "commit", "-m", "pushed crypto data on " + commitDate + " @ time "+
         commitTime).Output()
 
     return currCommits
+}
+
+// Gathers data, add it to the repo, commits it and pushes it
+func ExecuteGatherAndPush(commits int, override bool, configuration Configuration) {
+    log.Println("Gathering Data and Pushing it to the repo(s): ")
+
+    allRepoPath, _ := GetCryptotrackerPath()
+    allRepoPath += "/repositories"
+
+    if _, err := os.Stat(allRepoPath); os.IsNotExist(err) {
+        os.Mkdir(allRepoPath, os.ModePerm)
+    } else {
+        os.RemoveAll(allRepoPath)
+        os.Mkdir(allRepoPath, os.ModePerm)
+    }
+
+    // make sure coins are unique
+    coinMap := make(map[string]string)
+    for i := 0; i < len(configuration.Coins); i++ {
+        coinMap[configuration.Coins[i]] = configuration.Coins[i]
+    }
+
+    for i := 0; i < len(configuration.Repos); i++ {
+        repoPath, _ := GetCryptotrackerPath()
+        repoPath += "/repositories"
+        splits := strings.Split(configuration.Repos[0], "/")
+        repoPath += "/" + splits[len(splits)-1]
+        os.Mkdir(repoPath, os.ModePerm)
+
+        validCommits := int(math.Min(15, float64(len(configuration.Coins))))
+        changes := false
+
+        if commits < validCommits {
+            validCommits = commits
+        }
+        currCommits := 1
+
+        exec.Command("git", "clone", configuration.Repos[i], repoPath).Output()
+
+        for r := range coinMap {
+            info := GetCoinInformation(r)
+
+            // check if coin is valid by looking at the data
+            if info.Coin.Symbol == "" && info.Coin.Name == "" {
+                log.Println(r + " is not a valid coin. Skipping this!!")
+                validCommits -= 1
+                continue
+            }
+
+            coinPath := repoPath + string(filepath.Separator) + r
+            yearPath := coinPath + string(filepath.Separator) + strconv.Itoa(info.Date.Year)
+            monthPath := yearPath + string(filepath.Separator) + info.Date.Month
+            dayPath := monthPath + string(filepath.Separator) + strconv.Itoa(info.Date.Day)
+            filePath := dayPath + string(filepath.Separator) + info.Coin.Symbol + "-hour" +
+                strconv.Itoa(time.Now().Hour()) + ".json"
+
+            if _, err := os.Stat(dayPath); os.IsNotExist(err) {
+                os.MkdirAll(dayPath, os.ModePerm)
+            }
+
+            if _, err := os.Stat(filePath); os.IsNotExist(err) || override {
+                coinJson, _ := json.MarshalIndent(info, "", " ")
+                err = ioutil.WriteFile(filePath, coinJson, 0644)
+
+                // add all the files
+                exec.Command("git", "-C", repoPath, "add", "-A").Output()
+
+                if currCommits < validCommits {
+                    currCommits = CommitData(repoPath, currCommits)
+                }
+
+                changes = true
+            }
+        }
+
+        if changes {
+            // final commit and push
+            CommitData(repoPath, currCommits)
+            exec.Command("git", "-C", repoPath, "push", "origin", "master").Output()
+        }
+    }
+
+    log.Println("Done!!")
 }
