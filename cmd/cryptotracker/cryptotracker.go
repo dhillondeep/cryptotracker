@@ -6,8 +6,8 @@ import (
     "log"
 
     "github.com/urfave/cli"
-    "./commands/gather"
-    "./commands/monitor"
+    "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/commands/gather"
+    "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/commands/monitor"
 )
 
 func main() {

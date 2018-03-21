@@ -15,6 +15,8 @@ import (
     "encoding/json"
     "strings"
     "log"
+
+    . "github.com/dhillondeep/cryptotracker/cmd/cryptotracker/types"
 )
 
 // Creates a coin information packet that contains the date, coin and news
